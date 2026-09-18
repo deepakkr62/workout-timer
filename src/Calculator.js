@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import clickSound from "./ClickSound.m4a";
 
 function Calculator({ workouts, allowSound }) {
@@ -8,21 +8,30 @@ function Calculator({ workouts, allowSound }) {
   const [durationBreak, setDurationBreak] = useState(5);
   const [duration, setDuration] = useState(0);
 
-  //ider hme useEffect isliye use kiye hai kyuki hme 4 sate ke sath update chayee tha otherwise
-  //  hme sabhi ke event handler me jake dusration ka formula update krna padta
+  // const playSound = useCallback(
+  //   function () {
+  //     if (!allowSound) return;
+  //     const sound = new Audio(clickSound);
+  //     sound.play();
+  //   },
+  //   [allowSound],
+  // );
+
   useEffect(() => {
     setDuration((number * sets * speed) / 60 + (sets - 1) * durationBreak);
   }, [number, sets, speed, durationBreak]);
 
-  // const duration = (number * sets * speed) / 60 + (sets - 1) * durationBreak;
+  useEffect(() => {
+    const playSound = function () {
+      if (!allowSound) return;
+      const sound = new Audio(clickSound);
+      sound.play();
+    };
+    playSound();
+  }, [duration, allowSound]);
+
   const mins = Math.floor(duration);
   const seconds = (duration - mins) * 60;
-
-  const playSound = function () {
-    if (!allowSound) return;
-    const sound = new Audio(clickSound);
-    sound.play();
-  };
 
   function handleInc() {
     setDuration((duration) => Math.floor(duration) + 1);
